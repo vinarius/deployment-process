@@ -19,7 +19,7 @@ export class CICDStack extends Stack {
         env: {
           BRANCH: prodBranch,
         },
-        input: CodePipelineSource.connection('internal-tech-solutions/process-poc', prodBranch, {
+        input: CodePipelineSource.connection('Internal-Tech-Solutions/process-poc', prodBranch, {
           connectionArn: 'arn:aws:codestar-connections:us-east-1:597119195378:connection/12e61d31-c78f-4f1d-9262-78e0e4fe0a52',
         }),
         installCommands: [
