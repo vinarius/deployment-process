@@ -15,6 +15,7 @@ async function main() {
 
   try {
     const { project, stage, isFeatureEnv } = await getAppConfig();
+    const buildStackName = (stack: string) => `${project}-${stack}-stack-${stage}`;
 
     if (isFeatureEnv) {
       new Application(app, `${project}-app-stage-${stage}`, {
@@ -28,7 +29,7 @@ async function main() {
         project,
         stage,
         isFeatureEnv,
-        stackName: stackNames.cicd,
+        stackName: buildStackName(stackNames.cicd),
         stageDefinitions,
         env: cicdEnv,
       });

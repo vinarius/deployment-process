@@ -14,7 +14,7 @@ export enum AppStage {
 }
 
 export const project = 'bird';
-export const prodBranch = 'master';
+export const prodBranch = 'main';
 
 export interface ApplicationDefinition extends AppConfig {
   stageDefinition: StageDefinition;
@@ -75,4 +75,4 @@ export const stageDefinitions: StageDefinitions = {
   // },
 };
 
-export const cicdEnv = stageDefinitions[AppStage.dev].env;
+export const cicdEnv = stageDefinitions[AppStage.prod].env;

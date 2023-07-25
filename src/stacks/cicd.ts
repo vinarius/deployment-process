@@ -18,16 +18,14 @@ export class CICDStack extends Stack {
         env: {
           BRANCH: prodBranch,
         },
-        input: CodePipelineSource.connection('internal-tech-solutions/process-poc', 'master', {
-          connectionArn: 'arn:aws:codestar-connections:us-east-2:476324220602:connection/10e74423-5961-45c7-a3d4-1e8e6fa4052a',
+        input: CodePipelineSource.connection('internal-tech-solutions/process-poc', prodBranch, {
+          connectionArn: 'arn:aws:codestar-connections:us-east-1:597119195378:connection/12e61d31-c78f-4f1d-9262-78e0e4fe0a52',
         }),
         installCommands: [
           'yarn install --frozen-lockfile',
         ],
         commands: [
-          'pwd',
-          'ls -la',
-          'npx cdk synth -v',
+          'npx cdk synth --quiet',
         ],
       }),
       codeBuildDefaults: {
