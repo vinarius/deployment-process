@@ -2,7 +2,7 @@ import { Stack, StackProps } from 'aws-cdk-lib';
 import { CodePipeline, CodePipelineSource, ShellStep } from 'aws-cdk-lib/pipelines';
 import { Construct } from 'constructs';
 
-import { AppStage, StageDefinitions } from '../config';
+import { AppStage, StageDefinitions, prodBranch } from '../config';
 import { AppConfig } from '../lib/getAppConfig';
 import { Application } from './application';
 
@@ -15,6 +15,9 @@ export class CICDStack extends Stack {
     const pipeline = new CodePipeline(this, `${project}-${stackName}-pipeline-${stage}`, {
       pipelineName: `${project}-${stackName}-pipeline-${stage}`,
       synth: new ShellStep(`${project}-${stackName}-synthStep-${stage}`, {
+        env: {
+          BRANCH: prodBranch,
+        },
         input: CodePipelineSource.connection('internal-tech-solutions/process-poc', 'master', {
           connectionArn: 'arn:aws:codestar-connections:us-east-2:476324220602:connection/10e74423-5961-45c7-a3d4-1e8e6fa4052a',
         }),
