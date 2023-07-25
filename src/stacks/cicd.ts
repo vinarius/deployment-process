@@ -10,11 +10,7 @@ export class CICDStack extends Stack {
   constructor(scope: Construct, id: string, props: StackProps & AppConfig & { stackName: string; stageDefinitions: StageDefinitions }) {
     super(scope, id, props);
 
-    console.log(4);
-
     const { stageDefinitions, project, stage, stackName, isFeatureEnv } = props;
-
-    console.log(5);
 
     const pipeline = new CodePipeline(this, `${project}-${stackName}-pipeline-${stage}`, {
       pipelineName: `${project}-${stackName}-pipeline-${stage}`,
@@ -41,8 +37,6 @@ export class CICDStack extends Stack {
       },
       crossAccountKeys: true,
     });
-
-    console.log(6);
 
     const nonFeatureStages = Object.entries(stageDefinitions).filter(stageDefinition => stageDefinition[0] !== AppStage.individual);
 

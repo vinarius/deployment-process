@@ -14,11 +14,7 @@ async function main() {
   const app = new App();
 
   try {
-    console.log(1);
-
     const { project, stage, isFeatureEnv } = await getAppConfig();
-
-    console.log(2);
 
     if (isFeatureEnv) {
       new Application(app, `${project}-app-stage-${stage}`, {
@@ -28,9 +24,6 @@ async function main() {
         stageDefinition: stageDefinitions[AppStage.individual],
       });
     } else {
-
-      console.log(3);
-
       new CICDStack(app, `${project}-cicd-stack-${stage}`, {
         project,
         stage,
@@ -39,11 +32,7 @@ async function main() {
         stageDefinitions,
         env: cicdEnv,
       });
-
-      console.log(3);
     }
-
-    app.synth();
   } catch (error) {
     console.error(error);
     process.exit(1);
