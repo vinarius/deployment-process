@@ -1,0 +1,43 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug Infrastructure",
+      "env": {},
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      // use ts-node to transpile TypeScript to JavaScript
+      "runtimeArgs": [
+        "-r",
+        "./node_modules/ts-node/register/transpile-only"
+      ],
+      // the file to launch. Typically, the entry point of the program.
+      "args": [
+        "${workspaceFolder}/infrastructure.ts"
+      ],
+      // Runtime path for Morgen to uncomment to get Debugging working on Ubuntu
+      // "runtimeExecutable": "/home/morgen/.nvm/versions/node/v16.15.0/bin/node"
+      "runtimeExecutable": "/home/vinarius/.nvm/versions/node/v18.14.0/bin/node"
+    },
+    {
+      "name": "Launch Current TS File",
+      "type": "node",
+      "request": "launch",
+      "env": {
+        "LOGGING_LEVEL": "debug",
+        "AWS_PROFILE": "sigsee-prod-token",
+        "AWS_REGION": "us-east-2",
+      },
+      "runtimeArgs": [
+        "-r",
+        "ts-node/register"
+      ],
+      "args": [
+        "${workspaceFolder}/${relativeFile}"
+      ]
+    }
+  ]
+}

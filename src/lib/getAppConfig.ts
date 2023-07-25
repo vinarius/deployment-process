@@ -2,6 +2,7 @@ import { AppStage, prodBranch, project, stageDefinitions } from '../config';
 import { getLocalGitBranch } from './getLocalGitBranch';
 
 export type AppConfig = {
+  applicationStage: string;
   project: string;
   stage: string;
   isFeatureEnv: boolean;
@@ -14,8 +15,8 @@ export async function getAppConfig(): Promise<AppConfig> {
 
   const isFeatureEnv = branch !== prodBranch;
 
-  if (isFeatureEnv && stageDefinitions[AppStage.individual]?.env?.account) throw new Error(`>>> No account prop found in ${AppStage.individual} stage definition.`);
-  if (isFeatureEnv && stageDefinitions[AppStage.individual]?.env?.region) throw new Error(`>>> No region prop found in ${AppStage.individual} stage definition.`);
+  if (isFeatureEnv && !stageDefinitions[AppStage.individual]?.env?.account) throw new Error(`>>> No account prop found in ${AppStage.individual} stage definition.`);
+  if (isFeatureEnv && !stageDefinitions[AppStage.individual]?.env?.region) throw new Error(`>>> No region prop found in ${AppStage.individual} stage definition.`);
 
   const stage =
     branch === prodBranch
@@ -25,6 +26,7 @@ export async function getAppConfig(): Promise<AppConfig> {
         : branch; // This paradigm allows for ephemeral resource creation for team development.
 
   return {
+    applicationStage: `${project}-stage-${stage}`,
     isFeatureEnv,
     stage,
     project,
