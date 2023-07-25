@@ -1,11 +1,13 @@
 import { configDotenv } from 'dotenv';
 import { fromRoot } from './lib/fromRoot';
-import { AppConfig } from './lib/getAppConfig';
 
-configDotenv({ path: fromRoot() });
+configDotenv({ path: fromRoot('.env') });
+
+import { AppConfig } from './lib/getAppConfig';
 
 export enum AppStage {
   individual = 'individual',
+  cicd = 'cicd',
   dev = 'dev',
   test = 'test',
   // staging = 'staging',
@@ -17,6 +19,7 @@ export enum AppStage {
 
 export const project = 'bird';
 export const prodBranch = 'main';
+export const codestarConnectionArn = 'arn:aws:codestar-connections:us-east-1:597119195378:connection/12e61d31-c78f-4f1d-9262-78e0e4fe0a52';
 
 export interface ApplicationDefinition extends AppConfig {
   stageDefinition: StageDefinition;
@@ -38,6 +41,13 @@ export const stageDefinitions: StageDefinitions = {
     env: {
       account: process.env.AWS_ACCOUNT_ID ?? process.env.CDK_DEFAULT_ACCOUNT ?? '',
       region: process.env.AWS_REGION ?? process.env.CDK_DEFAULT_REGION ?? '',
+    },
+  },
+  [AppStage.cicd]: {
+    name: AppStage.cicd,
+    env: {
+      account: '597119195378',
+      region: 'us-east-2',
     },
   },
   [AppStage.dev]: {
@@ -90,5 +100,3 @@ export const stageDefinitions: StageDefinitions = {
   //   },
   // },
 };
-
-export const cicdEnv = stageDefinitions[AppStage.prod].env;

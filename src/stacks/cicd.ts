@@ -2,7 +2,7 @@ import { Stack, StackProps } from 'aws-cdk-lib';
 import { CodePipeline, CodePipelineSource, ManualApprovalStep, ShellStep } from 'aws-cdk-lib/pipelines';
 import { Construct } from 'constructs';
 
-import { AppStage, StageDefinitions, prodBranch } from '../config';
+import { AppStage, StageDefinitions, codestarConnectionArn, prodBranch } from '../config';
 import { AppConfig } from '../lib/getAppConfig';
 import { StackName } from '../main';
 import { Application } from './application';
@@ -20,10 +20,11 @@ export class CICDStack extends Stack {
           BRANCH: prodBranch,
         },
         input: CodePipelineSource.connection('Internal-Tech-Solutions/process-poc', prodBranch, {
-          connectionArn: 'arn:aws:codestar-connections:us-east-1:597119195378:connection/12e61d31-c78f-4f1d-9262-78e0e4fe0a52',
+          connectionArn: codestarConnectionArn,
         }),
         installCommands: [
           'yarn install --frozen-lockfile',
+          'yarn global add esbuild',
         ],
         commands: [
           'npx cdk synth --quiet',
@@ -37,12 +38,17 @@ export class CICDStack extends Stack {
       crossAccountKeys: true,
     });
 
-    const nonFeatureStages = Object.entries(stageDefinitions).filter(stageDefinition => stageDefinition[0] !== AppStage.individual);
+    const nonFeatureStages = Object.entries(stageDefinitions)
+      .filter(stageDefinition =>
+        stageDefinition[0] !== AppStage.individual &&
+        stageDefinition[0] !== AppStage.cicd
+      );
 
     for (const [nonFeatureAppStage, stageDefinition] of nonFeatureStages) {
       const { env } = stageDefinition;
 
       const pipelineStage = pipeline.addStage(new Application(this, `${project}-${stack}-app-${nonFeatureAppStage}`, {
+        ...props,
         project,
         stage,
         isFeatureEnv,
