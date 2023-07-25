@@ -10,6 +10,8 @@ export enum AppStage {
   test = 'test',
   // staging = 'staging',
   prod = 'prod',
+  // prod2 = 'prod2',
+  // prod3 = 'prod3',
   // postProd = 'postProd',
 }
 
@@ -66,6 +68,20 @@ export const stageDefinitions: StageDefinitions = {
       region: 'us-east-2',
     },
   },
+  // [AppStage.prod2]: {
+  //   name: AppStage.prod2,
+  //   env: {
+  //     account: '597119195378',
+  //     region: 'us-east-2',
+  //   },
+  // },
+  // [AppStage.prod3]: {
+  //   name: AppStage.prod3,
+  //   env: {
+  //     account: '597119195378',
+  //     region: 'us-east-2',
+  //   },
+  // },
   // [AppStage.postProd]: {
   //   name: AppStage.postProd,
   //   env: {

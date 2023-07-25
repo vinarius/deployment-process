@@ -1,5 +1,5 @@
 import { Stack, StackProps } from 'aws-cdk-lib';
-import { CodePipeline, CodePipelineSource, ShellStep } from 'aws-cdk-lib/pipelines';
+import { CodePipeline, CodePipelineSource, ManualApprovalStep, ShellStep } from 'aws-cdk-lib/pipelines';
 import { Construct } from 'constructs';
 
 import { AppStage, StageDefinitions, prodBranch } from '../config';
@@ -11,7 +11,7 @@ export class CICDStack extends Stack {
   constructor(scope: Construct, id: string, props: StackProps & AppConfig & { stackName: string; stageDefinitions: StageDefinitions; stack: StackName; }) {
     super(scope, id, props);
 
-    const { stageDefinitions, project, stage, stack, isFeatureEnv } = props;
+    const { stageDefinitions, project, stage, stack, isFeatureEnv, env } = props;
 
     const pipeline = new CodePipeline(this, `${project}-${stack}-pipeline-${stage}`, {
       pipelineName: `${project}-${stack}-pipeline-${stage}`,
@@ -40,12 +40,22 @@ export class CICDStack extends Stack {
     const nonFeatureStages = Object.entries(stageDefinitions).filter(stageDefinition => stageDefinition[0] !== AppStage.individual);
 
     for (const [nonFeatureAppStage, stageDefinition] of nonFeatureStages) {
-      pipeline.addStage(new Application(this, `${project}-${stack}-app-${nonFeatureAppStage}`, {
+      const pipelineStage = pipeline.addStage(new Application(this, `${project}-${stack}-app-${nonFeatureAppStage}`, {
         project,
         stage,
         isFeatureEnv,
         stageDefinition,
+        env
       }));
+
+      if (nonFeatureAppStage === AppStage.prod) {
+        pipelineStage.addPre(
+          new ManualApprovalStep(`${project}-${stack}-manualApprovalStep-${nonFeatureAppStage}`,
+          {
+            comment: 'Approve to deploy to prod'
+          }
+        ));
+      }
     }
   }
 }
