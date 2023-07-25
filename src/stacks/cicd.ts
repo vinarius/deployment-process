@@ -34,6 +34,11 @@ export class CICDStack extends Stack {
           'npx cdk synth -v',
         ],
       }),
+      codeBuildDefaults: {
+        buildEnvironment: {
+          privileged: true,
+        }
+      },
       crossAccountKeys: true,
     });
 
