@@ -11,7 +11,7 @@ export class CICDStack extends Stack {
   constructor(scope: Construct, id: string, props: StackProps & AppConfig & { stackName: string; stageDefinitions: StageDefinitions; stack: StackName; }) {
     super(scope, id, props);
 
-    const { stageDefinitions, project, stage, stack, isFeatureEnv, env } = props;
+    const { stageDefinitions, project, stage, stack, isFeatureEnv } = props;
 
     const pipeline = new CodePipeline(this, `${project}-${stack}-pipeline-${stage}`, {
       pipelineName: `${project}-${stack}-pipeline-${stage}`,
@@ -40,6 +40,8 @@ export class CICDStack extends Stack {
     const nonFeatureStages = Object.entries(stageDefinitions).filter(stageDefinition => stageDefinition[0] !== AppStage.individual);
 
     for (const [nonFeatureAppStage, stageDefinition] of nonFeatureStages) {
+      const { env } = stageDefinition;
+
       const pipelineStage = pipeline.addStage(new Application(this, `${project}-${stack}-app-${nonFeatureAppStage}`, {
         project,
         stage,
