@@ -9,7 +9,7 @@ type StackProps = AppStackProps & {
   table: Table;
 };
 
-export class ComputeStack extends Stack {
+export class OtherStack extends Stack {
   constructor(scope: Construct, id: string, props: StackProps) {
     super(scope, id, props);
 

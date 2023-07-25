@@ -10,10 +10,10 @@ export class StatefulStack extends Stack {
   constructor(scope: Construct, id: string, props: AppStackProps) {
     super(scope, id, props);
 
-    const { project, stage, stackName } = props;
+    const { project, stage, stack } = props;
 
-    this.table = new Table(this, `${project}-${stackName}-table-${stage}`, {
-      tableName: `${project}-${stackName}-table-${stage}`,
+    this.table = new Table(this, `${project}-${stack}-table-${stage}`, {
+      tableName: `${project}-${stack}-table-${stage}`,
       partitionKey: {
         name: 'pk',
         type: AttributeType.STRING,

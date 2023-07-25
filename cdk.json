@@ -1,5 +1,6 @@
 {
   "app": "npx ts-node --prefer-ts-exts src/main.ts",
+  "versionReporting": false,
   "watch": {
     "include": [
       "**"
@@ -17,7 +18,6 @@
     ]
   },
   "context": {
-    "@aws-cdk/core:newStyleStackSynthesis": true,
     "@aws-cdk/aws-lambda:recognizeLayerVersion": true,
     "@aws-cdk/core:checkSecretUsage": true,
     "@aws-cdk/core:target-partitions": [

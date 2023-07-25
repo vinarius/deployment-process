@@ -1,13 +1,15 @@
 import { App } from 'aws-cdk-lib';
 import { AppStage, cicdEnv, stageDefinitions } from './config';
+import { buildStackName } from './lib/buildStackName';
 import { getAppConfig } from './lib/getAppConfig';
 import { Application } from './stacks/application';
 import { CICDStack } from './stacks/cicd';
 
-export enum stackNames {
+export enum StackName {
   stateful = 'stateful',
   compute = 'compute',
   cicd = 'cicd',
+  other = 'other',
 };
 
 async function main() {
@@ -15,7 +17,6 @@ async function main() {
 
   try {
     const { project, stage, isFeatureEnv } = await getAppConfig();
-    const buildStackName = (stack: string) => `${project}-${stack}-stack-${stage}`;
 
     if (isFeatureEnv) {
       new Application(app, `${project}-app-stage-${stage}`, {
@@ -25,11 +26,13 @@ async function main() {
         stageDefinition: stageDefinitions[AppStage.individual],
       });
     } else {
-      new CICDStack(app, `${project}-cicd-stack-${stage}`, {
+      const cicdStackName = buildStackName(project, StackName.cicd, stage);
+      new CICDStack(app, cicdStackName, {
         project,
         stage,
         isFeatureEnv,
-        stackName: buildStackName(stackNames.cicd),
+        stackName: cicdStackName,
+        stack: StackName.cicd,
         stageDefinitions,
         env: cicdEnv,
       });

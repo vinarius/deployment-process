@@ -4,17 +4,18 @@ import { Construct } from 'constructs';
 
 import { AppStage, StageDefinitions, prodBranch } from '../config';
 import { AppConfig } from '../lib/getAppConfig';
+import { StackName } from '../main';
 import { Application } from './application';
 
 export class CICDStack extends Stack {
-  constructor(scope: Construct, id: string, props: StackProps & AppConfig & { stackName: string; stageDefinitions: StageDefinitions }) {
+  constructor(scope: Construct, id: string, props: StackProps & AppConfig & { stackName: string; stageDefinitions: StageDefinitions; stack: StackName; }) {
     super(scope, id, props);
 
-    const { stageDefinitions, project, stage, stackName, isFeatureEnv } = props;
+    const { stageDefinitions, project, stage, stack, isFeatureEnv } = props;
 
-    const pipeline = new CodePipeline(this, `${project}-${stackName}-pipeline-${stage}`, {
-      pipelineName: `${project}-${stackName}-pipeline-${stage}`,
-      synth: new ShellStep(`${project}-${stackName}-synthStep-${stage}`, {
+    const pipeline = new CodePipeline(this, `${project}-${stack}-pipeline-${stage}`, {
+      pipelineName: `${project}-${stack}-pipeline-${stage}`,
+      synth: new ShellStep(`${project}-${stack}-synthStep-${stage}`, {
         env: {
           BRANCH: prodBranch,
         },
@@ -39,7 +40,7 @@ export class CICDStack extends Stack {
     const nonFeatureStages = Object.entries(stageDefinitions).filter(stageDefinition => stageDefinition[0] !== AppStage.individual);
 
     for (const [nonFeatureAppStage, stageDefinition] of nonFeatureStages) {
-      pipeline.addStage(new Application(this, `${project}-${stackName}-app-${nonFeatureAppStage}`, {
+      pipeline.addStage(new Application(this, `${project}-${stack}-app-${nonFeatureAppStage}`, {
         project,
         stage,
         isFeatureEnv,
