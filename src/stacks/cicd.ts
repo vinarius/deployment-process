@@ -6,7 +6,7 @@ import { AppStage, StageDefinitions, codestarConnectionArn, prodBranch } from '.
 import { AppConfig } from '../lib/getAppConfig';
 import { StackName } from '../main';
 import { Application } from './application';
-import { Cache, LocalCacheMode } from 'aws-cdk-lib/aws-codebuild';
+import { BuildSpec, Cache, LocalCacheMode } from 'aws-cdk-lib/aws-codebuild';
 
 export class CICDStack extends Stack {
   constructor(scope: Construct, id: string, props: StackProps & AppConfig & { stackName: string; stageDefinitions: StageDefinitions; stack: StackName; }) {
@@ -38,7 +38,14 @@ export class CICDStack extends Stack {
         buildEnvironment: {
           privileged: true,
         },
-        cache: Cache.local(LocalCacheMode.SOURCE)
+        cache: Cache.local(LocalCacheMode.CUSTOM),
+        partialBuildSpec: BuildSpec.fromObject({
+          cache: {
+            paths: [
+              'node_modules/**/*',
+            ],
+          },
+        })
       },
       crossAccountKeys: true,
     });
