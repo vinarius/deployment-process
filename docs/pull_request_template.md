@@ -4,7 +4,7 @@
 
 Include the test commands you ran locally to test this change:
 ```
-npx jest --coverage
+npx jest --coverage --silent
 ```
 
 ## Monitoring
