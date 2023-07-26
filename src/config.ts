@@ -17,7 +17,7 @@ export enum AppStage {
   // postProd = 'postProd',
 }
 
-export const project = 'bird';
+export const project = 'poc';
 export const prodBranch = 'main';
 export const codestarConnectionArn = 'arn:aws:codestar-connections:us-east-1:597119195378:connection/12e61d31-c78f-4f1d-9262-78e0e4fe0a52';
 
