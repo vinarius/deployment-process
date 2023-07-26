@@ -49,11 +49,23 @@ export class CICDStack extends Stack {
           'npx cdk synth --quiet',
         ],
       }),
+      assetPublishingCodeBuildDefaults: {
+        cache: Cache.bucket(buildCacheBucket, {
+          prefix: `${project}-${stack}-buildCache-${stage}`,
+        }),
+      },
+      selfMutationCodeBuildDefaults: {
+        cache: Cache.bucket(buildCacheBucket, {
+          prefix: `${project}-${stack}-buildCache-${stage}`,
+        }),
+      },
       codeBuildDefaults: {
         buildEnvironment: {
           privileged: true,
         },
-        cache: Cache.local(LocalCacheMode.SOURCE)
+        cache: Cache.bucket(buildCacheBucket, {
+          prefix: `${project}-${stack}-buildCache-${stage}`,
+        }),
       },
       crossAccountKeys: true,
     });
