@@ -42,7 +42,7 @@ export class CICDStack extends Stack {
         partialBuildSpec: BuildSpec.fromObject({
           cache: {
             paths: [
-              'node_modules/**/*',
+              '/root/.cache/yarn/**/*'
             ],
           },
         })
