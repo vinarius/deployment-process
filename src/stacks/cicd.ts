@@ -16,6 +16,9 @@ export class CICDStack extends Stack {
 
     const pipeline = new CodePipeline(this, `${project}-${stack}-pipeline-${stage}`, {
       pipelineName: `${project}-${stack}-pipeline-${stage}`,
+      synthCodeBuildDefaults: {
+        cache: Cache.local(LocalCacheMode.SOURCE)
+      },
       synth: new ShellStep(`${project}-${stack}-synthStep-${stage}`, {
         env: {
           BRANCH: prodBranch,
