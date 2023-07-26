@@ -15,20 +15,17 @@ export class CICDStack extends Stack {
 
     const { stageDefinitions, project, stage, stack, isFeatureEnv } = props;
 
-    // const buildCacheBucket = new Bucket(this, `${project}-${stack}-buildCacheBucket-${stage}`, {
-    //   removalPolicy: RemovalPolicy.DESTROY,
-    //   autoDeleteObjects: true,
-    // });
-
-    // change1
-    // change2
+    const buildCacheBucket = new Bucket(this, `${project}-${stack}-buildCacheBucket-${stage}`, {
+      removalPolicy: RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
+    });
 
     const pipeline = new CodePipeline(this, `${project}-${stack}-pipeline-${stage}`, {
       pipelineName: `${project}-${stack}-pipeline-${stage}`,
       synthCodeBuildDefaults: {
-        // cache: Cache.bucket(buildCacheBucket, {
-        //   prefix: `${project}-${stack}-buildCache-${stage}`,
-        // }),
+        cache: Cache.bucket(buildCacheBucket, {
+          prefix: `${project}-${stack}-buildCache-${stage}`,
+        }),
         partialBuildSpec: BuildSpec.fromObject({
           cache: {
             paths: [
@@ -56,21 +53,18 @@ export class CICDStack extends Stack {
         buildEnvironment: {
           privileged: true,
         },
-        // cache: Cache.local(LocalCacheMode.SOURCE)
+        cache: Cache.local(LocalCacheMode.SOURCE)
       },
       crossAccountKeys: true,
     });
 
-    const nonFeatureStages = Object.entries(stageDefinitions)
-      .filter(stageDefinition =>
-        stageDefinition[0] !== AppStage.individual &&
-        stageDefinition[0] !== AppStage.cicd
-      );
+    const stagingEnvs = Object.entries(stageDefinitions)
+      .filter(([appStage]) =>  appStage !== AppStage.individual && appStage !== AppStage.cicd);
 
-    for (const [nonFeatureAppStage, stageDefinition] of nonFeatureStages) {
+    for (const [appStage, stageDefinition] of stagingEnvs) {
       const { env } = stageDefinition;
 
-      const pipelineStage = pipeline.addStage(new Application(this, `${project}-${stack}-app-${nonFeatureAppStage}`, {
+      const pipelineStage = pipeline.addStage(new Application(this, `${project}-${stack}-app-${appStage}`, {
         ...props,
         project,
         stage,
@@ -79,9 +73,9 @@ export class CICDStack extends Stack {
         env
       }));
 
-      if (nonFeatureAppStage === AppStage.prod) {
+      if (appStage === AppStage.prod) {
         pipelineStage.addPre(
-          new ManualApprovalStep(`${project}-${stack}-manualApprovalStep-${nonFeatureAppStage}`,
+          new ManualApprovalStep(`${project}-${stack}-manualApprovalStep-${appStage}`,
           {
             comment: 'Approve to deploy to prod'
           }
