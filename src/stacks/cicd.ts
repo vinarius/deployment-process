@@ -22,18 +22,6 @@ export class CICDStack extends Stack {
 
     const pipeline = new CodePipeline(this, `${project}-${stack}-pipeline-${stage}`, {
       pipelineName: `${project}-${stack}-pipeline-${stage}`,
-      synthCodeBuildDefaults: {
-        cache: Cache.bucket(buildCacheBucket, {
-          prefix: `${project}-${stack}-buildCache-${stage}`,
-        }),
-        partialBuildSpec: BuildSpec.fromObject({
-          cache: {
-            paths: [
-              '/root/.cache/yarn/**/*'
-            ],
-          },
-        })
-      },
       synth: new ShellStep(`${project}-${stack}-synthStep-${stage}`, {
         env: {
           BRANCH: prodBranch,
@@ -49,16 +37,6 @@ export class CICDStack extends Stack {
           'npx cdk synth --quiet',
         ],
       }),
-      assetPublishingCodeBuildDefaults: {
-        cache: Cache.bucket(buildCacheBucket, {
-          prefix: `${project}-${stack}-buildCache-${stage}`,
-        }),
-      },
-      selfMutationCodeBuildDefaults: {
-        cache: Cache.bucket(buildCacheBucket, {
-          prefix: `${project}-${stack}-buildCache-${stage}`,
-        }),
-      },
       codeBuildDefaults: {
         buildEnvironment: {
           privileged: true,
@@ -66,6 +44,13 @@ export class CICDStack extends Stack {
         cache: Cache.bucket(buildCacheBucket, {
           prefix: `${project}-${stack}-buildCache-${stage}`,
         }),
+        partialBuildSpec: BuildSpec.fromObject({
+          cache: {
+            paths: [
+              'node_modules/**/*'
+            ],
+          },
+        })
       },
       crossAccountKeys: true,
     });
