@@ -15,17 +15,17 @@ export class CICDStack extends Stack {
 
     const { stageDefinitions, project, stage, stack, isFeatureEnv } = props;
 
-    const buildCacheBucket = new Bucket(this, `${project}-${stack}-buildCacheBucket-${stage}`, {
-      removalPolicy: RemovalPolicy.DESTROY,
-      autoDeleteObjects: true,
-    });
+    // const buildCacheBucket = new Bucket(this, `${project}-${stack}-buildCacheBucket-${stage}`, {
+    //   removalPolicy: RemovalPolicy.DESTROY,
+    //   autoDeleteObjects: true,
+    // });
 
     const pipeline = new CodePipeline(this, `${project}-${stack}-pipeline-${stage}`, {
       pipelineName: `${project}-${stack}-pipeline-${stage}`,
       synthCodeBuildDefaults: {
-        cache: Cache.bucket(buildCacheBucket, {
-          prefix: `${project}-${stack}-buildCache-${stage}`,
-        }),
+        // cache: Cache.bucket(buildCacheBucket, {
+        //   prefix: `${project}-${stack}-buildCache-${stage}`,
+        // }),
         partialBuildSpec: BuildSpec.fromObject({
           cache: {
             paths: [
@@ -53,7 +53,7 @@ export class CICDStack extends Stack {
         buildEnvironment: {
           privileged: true,
         },
-        cache: Cache.local(LocalCacheMode.SOURCE)
+        // cache: Cache.local(LocalCacheMode.SOURCE)
       },
       crossAccountKeys: true,
     });
