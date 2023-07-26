@@ -20,6 +20,8 @@ export class CICDStack extends Stack {
     //   autoDeleteObjects: true,
     // });
 
+    // change1
+
     const pipeline = new CodePipeline(this, `${project}-${stack}-pipeline-${stage}`, {
       pipelineName: `${project}-${stack}-pipeline-${stage}`,
       synthCodeBuildDefaults: {
