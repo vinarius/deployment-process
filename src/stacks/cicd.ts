@@ -17,7 +17,14 @@ export class CICDStack extends Stack {
     const pipeline = new CodePipeline(this, `${project}-${stack}-pipeline-${stage}`, {
       pipelineName: `${project}-${stack}-pipeline-${stage}`,
       synthCodeBuildDefaults: {
-        cache: Cache.local(LocalCacheMode.SOURCE)
+        cache: Cache.local(LocalCacheMode.SOURCE),
+        partialBuildSpec: BuildSpec.fromObject({
+          cache: {
+            paths: [
+              '/root/.cache/yarn/**/*'
+            ],
+          },
+        })
       },
       synth: new ShellStep(`${project}-${stack}-synthStep-${stage}`, {
         env: {
@@ -38,14 +45,7 @@ export class CICDStack extends Stack {
         buildEnvironment: {
           privileged: true,
         },
-        cache: Cache.local(LocalCacheMode.CUSTOM),
-        partialBuildSpec: BuildSpec.fromObject({
-          cache: {
-            paths: [
-              '/root/.cache/yarn/**/*'
-            ],
-          },
-        })
+        cache: Cache.local(LocalCacheMode.SOURCE),
       },
       crossAccountKeys: true,
     });
