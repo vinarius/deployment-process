@@ -21,6 +21,7 @@ export class CICDStack extends Stack {
     // });
 
     // change1
+    // change2
 
     const pipeline = new CodePipeline(this, `${project}-${stack}-pipeline-${stage}`, {
       pipelineName: `${project}-${stack}-pipeline-${stage}`,
