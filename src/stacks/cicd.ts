@@ -1,4 +1,4 @@
-import { Stack, StackProps } from 'aws-cdk-lib';
+import { RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
 import { CodePipeline, CodePipelineSource, ManualApprovalStep, ShellStep } from 'aws-cdk-lib/pipelines';
 import { Construct } from 'constructs';
 
@@ -7,6 +7,7 @@ import { AppConfig } from '../lib/getAppConfig';
 import { StackName } from '../main';
 import { Application } from './application';
 import { BuildSpec, Cache, LocalCacheMode } from 'aws-cdk-lib/aws-codebuild';
+import { Bucket } from 'aws-cdk-lib/aws-s3';
 
 export class CICDStack extends Stack {
   constructor(scope: Construct, id: string, props: StackProps & AppConfig & { stackName: string; stageDefinitions: StageDefinitions; stack: StackName; }) {
@@ -14,10 +15,17 @@ export class CICDStack extends Stack {
 
     const { stageDefinitions, project, stage, stack, isFeatureEnv } = props;
 
+    const buildCacheBucket = new Bucket(this, `${project}-${stack}-buildCacheBucket-${stage}`, {
+      removalPolicy: RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
+    });
+
     const pipeline = new CodePipeline(this, `${project}-${stack}-pipeline-${stage}`, {
       pipelineName: `${project}-${stack}-pipeline-${stage}`,
       synthCodeBuildDefaults: {
-        cache: Cache.local(LocalCacheMode.SOURCE),
+        cache: Cache.bucket(buildCacheBucket, {
+          prefix: `${project}-${stack}-buildCache-${stage}`,
+        }),
         partialBuildSpec: BuildSpec.fromObject({
           cache: {
             paths: [
@@ -45,7 +53,7 @@ export class CICDStack extends Stack {
         buildEnvironment: {
           privileged: true,
         },
-        cache: Cache.local(LocalCacheMode.SOURCE),
+        cache: Cache.local(LocalCacheMode.SOURCE)
       },
       crossAccountKeys: true,
     });
